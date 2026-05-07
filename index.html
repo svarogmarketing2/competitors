@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КОНКУРЕНТНАЯ МАТРИЦА — ВОЛЬФРАМОВЫЕ ЭЛЕКТРОДЫ</title>
+<style>
+:root {
+  --bg:#f4f6f8; --panel:#fff; --line:#dde3ea; --text:#2c3e50; --muted:#73808c;
+  --head:#36424f; --accent:#2ecc71; --orange:#e67e22; --soft-green:#eaf8f0;
+}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:var(--text);font-size:11px}
+.wrapper{max-width:1920px;margin:0 auto;padding:8px}
+.main-title{
+  text-align:center;font-weight:700;font-size:18px;letter-spacing:.02em;margin:0 0 8px;
+  padding:10px;background:linear-gradient(90deg,#e8f8f5,#f7fffb);border-left:5px solid var(--accent);
+  border-radius:10px;color:#22313f;
+}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(244,246,248,.96);backdrop-filter:blur(4px);padding:8px 0 9px;border-bottom:1px solid var(--line)}
+.toolbar{display:flex;gap:6px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.discount-panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;align-items:center;gap:6px;flex:1;min-width:600px;overflow-x:auto}
+.discount-title{font-weight:700;white-space:nowrap;color:#3b4652;margin-right:2px}
+.discount-item{display:flex;align-items:center;gap:4px;border:1px solid #dfe5ea;background:#f8fafb;border-radius:8px;padding:3px 6px;white-space:nowrap}
+.discount-item span{font-weight:700;font-size:11px;color:#465461}
+.discount-item input{width:42px;height:22px;border:1px solid #cfd7df;border-radius:6px;text-align:center;font-size:11px;background:#fff}
+.btn{border:0;border-radius:9px;padding:7px 10px;background:var(--orange);color:white;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(230,126,34,.18);white-space:nowrap;font-size:11px}
+.btn.secondary{background:#44515f}
+.btn:hover{filter:brightness(.96)}
+.update-panel{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 8px;min-width:280px;font-size:11px}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#bdc3c7;display:inline-block}
+.status-dot.loading{background:#f5b041;animation:pulse 1s infinite}
+.status-dot.success{background:#58d68d}
+.status-dot.error{background:#ec7063}
+@keyframes pulse{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+.mark-filter{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.mark-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 8px;font-size:10.5px;font-weight:700;color:#3b4652;cursor:pointer}
+.mark-btn.active{border-color:#b7cfbf;background:#effaf3;color:#255d39}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;border:1px solid rgba(0,0,0,.15);vertical-align:-1px}
+.mark-card{background:#fff;border:1px solid var(--line);border-radius:10px;margin:8px 0;overflow:hidden;box-shadow:0 3px 10px rgba(20,30,40,.04)}
+.mark-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 8px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,var(--mark-soft),#fff 55%)}
+.mark-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#1f2d3d}
+.mark-title a{color:#1f2d3d;text-decoration:underline dotted;text-underline-offset:3px}
+.mark-meta{color:var(--muted);font-size:10px}
+.zones{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:6px;padding:6px;background:#fbfcfd}
+.zone{border:1px solid #dfe5ea;border-radius:10px;background:#fff;overflow:hidden}
+.zone h3{margin:0;padding:5px 7px;font-size:11px;letter-spacing:.04em;text-align:center;color:#334155;border-bottom:1px solid #dfe5ea;background:#f7f9fb}
+.zone.rrc h3{background:#f1f7fb}
+.zone.opt h3{background:#f6f8f2}
+.zone.analysis h3{background:#f8f5f1}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th,td{border-bottom:1px solid #eef2f5;border-right:1px solid #eef2f5;padding:2px 3px;text-align:center;vertical-align:middle;line-height:1.15;font-size:10px}
+th{font-size:10px;background:#f8fafc;color:#576574;font-weight:700}
+td{color:#263645}
+th:first-child,td:first-child{width:36px;font-weight:700;background:#fbfcfd}
+.price-link{color:#263645;text-decoration:underline dotted;text-underline-offset:2px;font-weight:700;background:#fff7ea;border-radius:4px;padding:1px 3px;display:inline-block;min-width:34px}
+.price-link:hover{color:#e67e22;background:#fff0d8}
+.svarog-price{background:#edf8f0}
+.missing{color:#a0a8b0}
+.positive{color:#1e8449;font-weight:700}
+.negative{color:#b03a2e;font-weight:700}
+.neutral{color:#697681}
+.analysis-split{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px;background:#fff}
+.analysis-sub{border:1px solid #e1e7ed;border-radius:8px;overflow:hidden;background:#fff}
+.analysis-sub h4{margin:0;padding:5px 6px;text-align:center;font-size:10.5px;letter-spacing:.04em;color:#4b5563;background:#f7f6f3;border-bottom:1px solid #e1e7ed}
+.analysis-sub.rrc-sub h4{background:#f2f7fb}
+.analysis-sub.opt-sub h4{background:#f6f8f2}
+.analysis-sub table th:first-child,.analysis-sub table td:first-child{width:36px}
+.hidden{display:none!important}
+@media(max-width:1500px){.zones{grid-template-columns:1fr}.discount-panel{min-width:100%}.analysis-split{grid-template-columns:1fr}}
+@media print{.topbar{position:static}.btn{display:none}.mark-card{break-inside:avoid}}
+
+/* === Visual clarity update: analysis headers and links === */
+.analysis-sub table{
+  table-layout:auto;
+}
+.analysis-sub table th{
+  min-width:58px;
+  padding:4px 5px;
+  font-size:9.8px;
+  line-height:1.15;
+  white-space:normal;
+  word-break:normal;
+  overflow-wrap:anywhere;
+  background:#f4f7fa;
+  color:#34495e;
+  border-right:1px solid #d7e0e8;
+}
+.analysis-sub table th:first-child,
+.analysis-sub table td:first-child{
+  min-width:34px;
+  width:34px;
+  background:#fbfcfd;
+}
+.analysis-sub table td{
+  padding:3px 4px;
+  font-size:10px;
+  border-right:1px solid #e0e6ec;
+}
+.analysis-sub.rrc-sub{
+  border-color:#cfddea;
+}
+.analysis-sub.opt-sub{
+  border-color:#d8e2cf;
+}
+.analysis-sub.rrc-sub h4{
+  background:#eaf4fb;
+  color:#2f536f;
+  border-bottom:1px solid #cfddea;
+}
+.analysis-sub.opt-sub h4{
+  background:#f0f6e8;
+  color:#4c6339;
+  border-bottom:1px solid #d8e2cf;
+}
+.price-link.competitor-price{
+  background:#fff2d9;
+  border:1px solid #f0c27b;
+  color:#8a4b08;
+  text-decoration:underline;
+  text-decoration-style:dotted;
+  text-underline-offset:3px;
+  font-weight:800;
+  box-shadow:inset 0 -1px 0 rgba(230,126,34,.25);
+}
+.price-link.competitor-price::after{
+  content:" ↗";
+  font-size:9px;
+  color:#a85d10;
+}
+.price-link.competitor-price:hover{
+  background:#ffe7bd;
+  color:#c26400;
+  border-color:#e5a64e;
+}
+.price-link.svarog-price{
+  background:#edf8f0;
+  border:1px solid #c7e6cf;
+  color:#245a36;
+  text-decoration:underline dotted;
+  text-underline-offset:3px;
+}
+.mark-title a{
+  background:#f2fbf5;
+  border:1px solid #ccebd5;
+  border-radius:999px;
+  padding:3px 8px;
+  color:#23583a;
+}
+.mark-title a:hover{
+  background:#e5f7eb;
+  color:#184a2e;
+}
+@media(max-width:1500px){
+  .analysis-sub table th{min-width:72px}
+}
+
+
+/* === Final readability update === */
+.analysis-sub table th:first-child,
+.analysis-sub table td:first-child{
+  width:auto;
+  min-width:74px;
+  background:inherit;
+}
+.analysis-sub table th{
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  min-width:78px;
+  font-size:9.6px;
+  padding:4px 6px;
+}
+.analysis-sub table td{
+  font-size:10px;
+  padding:3px 5px;
+}
+.price-link.competitor-price{
+  background:#fff8ed!important;
+  border:1px solid #e6c38a!important;
+  color:#5f4424!important;
+  text-decoration:underline dotted!important;
+  text-underline-offset:3px!important;
+  font-weight:700!important;
+  box-shadow:none!important;
+}
+.price-link.competitor-price::after{
+  content:"";
+}
+.price-link.competitor-price:hover{
+  background:#fff1d9!important;
+  border-color:#d9ad6a!important;
+  color:#8a4b08!important;
+}
+.discount-item{
+  background:#f4f7f6!important;
+  border-color:#cfded7!important;
+  box-shadow:inset 3px 0 0 #9ecfb0;
+}
+.discount-item input{
+  background:#fffdf8!important;
+  border-color:#cdbb94!important;
+  color:#2c3e50!important;
+  font-weight:700;
+}
+.discount-item input:focus{
+  outline:2px solid rgba(158,207,176,.25);
+  border-color:#8fbd9d!important;
+}
+
+
+/* === Analysis compact grouped view === */
+.zone.analysis{min-width:0;}
+.analysis-split{display:grid!important;grid-template-columns:1fr!important;gap:5px!important;padding:5px!important;}
+.analysis-sub{border-radius:8px!important;}
+.analysis-sub h4{padding:4px 6px!important;font-size:10.5px!important;}
+.analysis-sub table{table-layout:fixed!important;width:100%!important;}
+.analysis-sub table th{min-width:0!important;width:auto!important;padding:4px 2px!important;font-size:8.7px!important;line-height:1.05!important;white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important;}
+.analysis-sub table td{padding:3px 2px!important;font-size:9.3px!important;line-height:1.05!important;white-space:nowrap!important;}
+.analysis-sub table th .comp-short{display:block;font-weight:800;}
+.analysis-sub table th .comp-full{display:none;}
+.analysis-note{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 6px;font-size:9px;color:#687684;background:#fbfcfd;border-top:1px solid #eef2f5;}
+.analysis-note span{white-space:nowrap;}
+@media(min-width:1650px){.analysis-sub table th{font-size:9.2px!important}.analysis-sub table td{font-size:9.7px!important}}
+
+
+/* === Analysis full competitor names readable === */
+.analysis-sub table th{
+  font-size:8.4px!important;
+  line-height:1.08!important;
+  padding:4px 2px!important;
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  word-break:normal!important;
+  hyphens:auto;
+}
+.analysis-sub table th .comp-short{
+  display:none!important;
+}
+.analysis-sub table th .comp-full{
+  display:block!important;
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+.analysis-sub table td{
+  font-size:9.2px!important;
+  padding:3px 2px!important;
+}
+@media(min-width:1700px){
+  .analysis-sub table th{font-size:9px!important}
+  .analysis-sub table td{font-size:9.7px!important}
+}
+
+
+/* === HTML requested refinements: diameter emphasis and OPT compact view === */
+.zone.rrc table th:first-child,
+.zone.rrc table td:first-child{
+  background:#eef7f0!important;
+  color:#245a36!important;
+  border-right:2px solid #c7e6cf!important;
+  font-weight:800!important;
+}
+.zone.rrc table td:first-child{
+  border-radius:4px;
+}
+.zone.opt table th:first-child,
+.zone.opt table td:first-child{
+  display:none!important;
+}
+.zone.opt table th:nth-child(2),
+.zone.opt table td:nth-child(2){
+  border-left:0!important;
+}
+
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="topbar">
+    <h1 class="main-title">КОНКУРЕНТНАЯ МАТРИЦА — ВОЛЬФРАМОВЫЕ ЭЛЕКТРОДЫ</h1>
+    <div class="toolbar">
+      <div class="discount-panel" id="discountPanel">
+        <div class="discount-title">ОПТОВАЯ СКИДКА ПО КОНКУРЕНТАМ</div>
+      </div>
+      <div class="update-panel">
+        <span id="updateDot" class="status-dot"></span>
+        <span id="updateStatus">Цены РРЦ: обновление не выполнялось</span>
+      </div>
+      <button class="btn secondary" onclick="updateAllRRCPrices()">Обновить РРЦ</button>
+      <button class="btn" onclick="exportExcel()">Отчет в Excel</button>
+    </div>
+    <div class="mark-filter" id="markFilter"></div>
+  </div>
+  <main id="matrix"></main>
+</div>
+
+<script>
+const MATRIX_DATA = [{"id": 0, "mark": "WCe 20", "diam": "1", "competitors": {"СВАРОГ": {"art": "99574", "url": "https://svarog-rf.ru/products/wce-20", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "1734", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_1_0mm_175mm_1sht_foxweld/", "rrc": 65.0}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 1, "mark": "WCe 20", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "99579", "url": "", "rrc": 290.3}, "ПТК": {"art": "007.100.131", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-ws-20-175mm-o-16", "rrc": 268.0}, "КЕДР": {"art": "7340035", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wc_20_175_1_6_mm_seryy_ac_dc/", "rrc": 299.0}, "FOXWELD": {"art": "1735", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_1_6mm_175mm_1sht_foxweld/", "rrc": 123.0}, "MTL": {"art": "WC-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__seriy__WC-20_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WC2016175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_ws_20_1_6_175_seryy_wc2016175/", "rrc": 253.0}, "ОБЕРОН": {"art": "wc2016", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wc-20-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 2, "mark": "WCe 20", "diam": "2", "competitors": {"СВАРОГ": {"art": "99582", "url": "", "rrc": 461.3}, "ПТК": {"art": "007.100.132", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-ws-20-175mm-o-20", "rrc": 430.0}, "КЕДР": {"art": "7340020", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wc_20_175_2_0_mm_seryy_ac_dc/", "rrc": 474.0}, "FOXWELD": {"art": "1736", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_2_0mm_175mm_1sht_foxweld/", "rrc": 181.0}, "MTL": {"art": "WC-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__seriy__WC-20_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WC2020175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_ws_20_2_0_175_seryy_wc2020175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wc2020", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wc-20-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 3, "mark": "WCe 20", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "99586", "url": "", "rrc": 614.3}, "ПТК": {"art": "007.100.133", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-ws-20-175mm-o-24", "rrc": 609.0}, "КЕДР": {"art": "7340021", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wc_20_175_2_4_mm_seryy_ac_dc/", "rrc": 632.0}, "FOXWELD": {"art": "1737", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_2_4mm_175mm_1sht_foxweld/", "rrc": 493.0}, "MTL": {"art": "WC-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__seriy__WC-20_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WC2024175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_ws_20_2_4_175_seryy_wc2024175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wc2024", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wc-20-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 4, "mark": "WCe 20", "diam": "3", "competitors": {"СВАРОГ": {"art": "99588", "url": "", "rrc": 949.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340036", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wc_20_175_3_0_mm_seryy_ac_dc/", "rrc": 977.0}, "FOXWELD": {"art": "1738", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_3_0mm_175mm_1sht_foxweld/", "rrc": 456.0}, "MTL": {"art": "WC-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__seriy__WC-20_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WC2030175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_ws_20_3_0_175_seryy_wc2030175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wc2030", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wc-20-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 5, "mark": "WCe 20", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "99571", "url": "", "rrc": 1093.5}, "ПТК": {"art": "007.100.134", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-ws-20-175mm-o-32", "rrc": 960.0}, "КЕДР": {"art": "7340045", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wc_20_175_3_2_mm_seryy_ac_dc/", "rrc": 1125.0}, "FOXWELD": {"art": "1739", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_3_2mm_175mm_1sht_foxweld/", "rrc": 467.0}, "MTL": {"art": "WC-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__seriy__WC-20_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WC2032175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_ws_20_3_2_175_seryy_wc2032175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wc2032", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wc-20-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 6, "mark": "WCe 20", "diam": "4", "competitors": {"СВАРОГ": {"art": "99573", "url": "", "rrc": 1723.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340037", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wc_20_175_4_0_mm_seryy_ac_dc/", "rrc": 1775.0}, "FOXWELD": {"art": "1740", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wc_20_4_0mm_175mm_1sht_foxweld/", "rrc": 811.0}, "MTL": {"art": "WC-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__seriy__WC-20_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WC2040175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_ws_20_4_0_175_seryy_wc2040175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "wc2040", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wc-20-d-4-0mm-l-175mm/", "rrc": 1658.0}}}, {"id": 7, "mark": "WGLa 15", "diam": "1", "competitors": {"СВАРОГ": {"art": "99576", "url": "https://svarog-rf.ru/products/wgla-15", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 8, "mark": "WGLa 15", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "99578", "url": "", "rrc": 290.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "WE16175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_super_mix_1_6kh175_rozovyy_we16175/", "rrc": 253.0}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 9, "mark": "WGLa 15", "diam": "2", "competitors": {"СВАРОГ": {"art": "99580", "url": "", "rrc": 461.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "WE20175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_super_mix_2_0kh175_rozovyy_we20175/", "rrc": 399.0}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 10, "mark": "WGLa 15", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "99572", "url": "", "rrc": 614.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "WE24175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_super_mix_2_4kh175_rozovyy_we24175/", "rrc": 575.0}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 11, "mark": "WGLa 15", "diam": "3", "competitors": {"СВАРОГ": {"art": "99577", "url": "", "rrc": 949.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 12, "mark": "WGLa 15", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "99583", "url": "", "rrc": 1093.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "WE32175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_super_mix_3_2kh175_rozovyy_we32175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 13, "mark": "WGLa 15", "diam": "4", "competitors": {"СВАРОГ": {"art": "99584", "url": "", "rrc": 1723.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 14, "mark": "WLa 15", "diam": "1", "competitors": {"СВАРОГ": {"art": "99587", "url": "https://svarog-rf.ru/products/wla15", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 15, "mark": "WLa 15", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "99575", "url": "", "rrc": 290.3}, "ПТК": {"art": "007.100.112", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-15-175mm-o-16", "rrc": 268.0}, "КЕДР": {"art": "7340002", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_15_175_1_6_mm_zolotistyy_ac_dc/", "rrc": 299.0}, "FOXWELD": {"art": "9545", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_15_1_6mm_175mm_1sht_zolotistyy_foxweld/", "rrc": 123.0}, "MTL": {"art": "WL-15", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zolotistiy__WL-15_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WL1516175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_15_1_6_175_zolotoy_wl1516175/", "rrc": 253.0}, "ОБЕРОН": {"art": "wl1516", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-15-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 16, "mark": "WLa 15", "diam": "2", "competitors": {"СВАРОГ": {"art": "99581", "url": "", "rrc": 461.3}, "ПТК": {"art": "007.100.113", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-15-175mm-o-20", "rrc": 430.0}, "КЕДР": {"art": "7340028", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_15_175_2_0_mm_zolotistyy_ac_dc/", "rrc": 474.0}, "FOXWELD": {"art": "9546", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_15_2_0mm_175mm_1sht_zolotistyy_foxweld/", "rrc": 198.0}, "MTL": {"art": "WL-15", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zolotistiy__WL-15_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WL1520175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_15_2_0_175_zolotoy_wl1520175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wl1520", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-15-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 17, "mark": "WLa 15", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "99585", "url": "", "rrc": 614.3}, "ПТК": {"art": "007.100.114", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-15-175mm-o-24", "rrc": 609.0}, "КЕДР": {"art": "7340001", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_15_175_2_4_mm_zolotistyy_ac_dc/", "rrc": 632.0}, "FOXWELD": {"art": "9547", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_15_2_4mm_175mm_1sht_zolotistyy_foxweld/", "rrc": 284.0}, "MTL": {"art": "WL-15", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zolotistiy__WL-15_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WL1524175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_15_2_4_175_zolotoy_wl1524175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wl1524", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-15-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 18, "mark": "WLa 15", "diam": "3", "competitors": {"СВАРОГ": {"art": "99589", "url": "", "rrc": 949.5}, "ПТК": {"art": "007.100.115", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-15-175mm-o-30", "rrc": 650.0}, "КЕДР": {"art": "7340029", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_15_175_3_0_mm_zolotistyy_ac_dc/", "rrc": 977.0}, "FOXWELD": {"art": "9548", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_15_3_0mm_175mm_1sht_zolotistyy_foxweld/", "rrc": 406.0}, "MTL": {"art": "WL-15", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zolotistiy__WL-15_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WL1530175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_15_3_0_175_zolotoy_wl1530175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wl1530", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-15-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 19, "mark": "WLa 15", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "99590", "url": "", "rrc": 1093.5}, "ПТК": {"art": "007.100.116", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-15-175mm-o-32", "rrc": 1020.0}, "КЕДР": {"art": "7340030", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_15_175_3_2_mm_zolotistyy_ac_dc/", "rrc": 1125.0}, "FOXWELD": {"art": "9549", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_15_3_2mm_175mm_1sht_zolotistyy_foxweld/", "rrc": 497.0}, "MTL": {"art": "WL-15", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zolotistiy__WL-15_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WL1532175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_15_3_2_175_zolotoy_wl1532175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wl1532", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-15-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 20, "mark": "WLa 15", "diam": "4", "competitors": {"СВАРОГ": {"art": "99591", "url": "", "rrc": 1723.5}, "ПТК": {"art": "007.100.117", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-15-175mm-o-40", "rrc": 1690.0}, "КЕДР": {"art": "7340031", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_15_175_4_0_mm_zolotistyy_ac_dc/", "rrc": 1775.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WL-15", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zolotistiy__WL-15_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WL1540175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_15_4_0_175_zolotoy_wl1540175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 21, "mark": "WLa 20", "diam": "1", "competitors": {"СВАРОГ": {"art": "99592", "url": "https://svarog-rf.ru/products/wla-20", "rrc": 189.0}, "ПТК": {"art": "007.100.121", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-10", "rrc": 185.0}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "1750", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_1_0mm_175mm_1sht_foxweld/", "rrc": 65.0}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 22, "mark": "WLa 20", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "99593", "url": "", "rrc": 290.3}, "ПТК": {"art": "007.100.122", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-16", "rrc": 268.0}, "КЕДР": {"art": "7340003", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_20_175_1_6_mm_siniy_ac_dc/", "rrc": 299.0}, "FOXWELD": {"art": "5584", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_1_6mm_175mm_1sht_foxweld/", "rrc": 70.0}, "MTL": {"art": "WL-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__siniy__WL-20_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WL2016175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_20_1_6_175_goluboy_wl2016175/", "rrc": 253.0}, "ОБЕРОН": {"art": "wl2016", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-20-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 23, "mark": "WLa 20", "diam": "2", "competitors": {"СВАРОГ": {"art": "99594", "url": "", "rrc": 461.3}, "ПТК": {"art": "007.100.123", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-20", "rrc": 430.0}, "КЕДР": {"art": "7340004", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_20_175_2_0_mm_siniy_ac_dc/", "rrc": 474.0}, "FOXWELD": {"art": "1752", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_2_0mm_175mm_1sht_foxweld/", "rrc": 206.0}, "MTL": {"art": "WL-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__siniy__WL-20_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WL2020175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_20_2_0_175_goluboy_wl2020175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wl2020", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-20-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 24, "mark": "WLa 20", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "99595", "url": "", "rrc": 614.3}, "ПТК": {"art": "007.100.124", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-24", "rrc": 609.0}, "КЕДР": {"art": "7340005", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_20_175_2_4_mm_siniy_ac_dc/", "rrc": 632.0}, "FOXWELD": {"art": "1753", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_2_4mm_175mm_1sht_foxweld/", "rrc": 298.0}, "MTL": {"art": "WL-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__siniy__WL-20_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WL2024175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_20_2_4_175_goluboy_wl2024175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wl2024", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-20-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 25, "mark": "WLa 20", "diam": "3", "competitors": {"СВАРОГ": {"art": "99596", "url": "", "rrc": 949.5}, "ПТК": {"art": "007.100.125", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-30", "rrc": 960.0}, "КЕДР": {"art": "7340032", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_20_175_3_0_mm_siniy_ac_dc/", "rrc": 977.0}, "FOXWELD": {"art": "1754", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_3_0mm_175mm_1sht_foxweld/", "rrc": 457.0}, "MTL": {"art": "WL-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__siniy__WL-20_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WL2030175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_20_3_0_175_goluboy_wl2030175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wl2030", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-20-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 26, "mark": "WLa 20", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "99597", "url": "", "rrc": 1093.5}, "ПТК": {"art": "007.100.126", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-32", "rrc": 1020.0}, "КЕДР": {"art": "7340006", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_20_175_3_2_mm_siniy_ac_dc/", "rrc": 1125.0}, "FOXWELD": {"art": "1755", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_3_2mm_175mm_1sht_foxweld/", "rrc": 882.0}, "MTL": {"art": "WL-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__siniy__WL-20_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WL2032175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_20_3_2_175_goluboy_wl2032175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wl2032", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-20-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 27, "mark": "WLa 20", "diam": "4", "competitors": {"СВАРОГ": {"art": "99598", "url": "", "rrc": 1723.5}, "ПТК": {"art": "007.100.127", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wl-20-175mm-o-40", "rrc": 1690.0}, "КЕДР": {"art": "7340007", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wl_20_175_4_0_mm_siniy_ac_dc/", "rrc": 1775.0}, "FOXWELD": {"art": "1756", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wl_20_4_0mm_175mm_1sht_foxweld/", "rrc": 820.0}, "MTL": {"art": "WL-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__siniy__WL-20_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WL2040175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wl_20_4_0_175_goluboy_wl2040175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "wl2040", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wl-20-d-4-0mm-l-175mm/", "rrc": 1658.0}}}, {"id": 28, "mark": "WP", "diam": "1", "competitors": {"СВАРОГ": {"art": "97663", "url": "https://svarog-rf.ru/products/wp", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "1757", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_1_0mm_175mm_1sht_foxweld/", "rrc": 65.0}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 29, "mark": "WP", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "97664", "url": "", "rrc": 290.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340044", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wp_175_1_6_mm_zelenyy_ac/", "rrc": 299.0}, "FOXWELD": {"art": "1759", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_1_6mm_175mm_1sht_foxweld/", "rrc": 123.0}, "MTL": {"art": "WP", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zeleniy__WP_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WP2016175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wp_1_6_175_zelenyy_wp2016175/", "rrc": 253.0}, "ОБЕРОН": {"art": "wp2016", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wp-20-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 30, "mark": "WP", "diam": "2", "competitors": {"СВАРОГ": {"art": "97665", "url": "", "rrc": 461.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340042", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wp_175_2_0_mm_zelenyy_ac/", "rrc": 474.0}, "FOXWELD": {"art": "1760", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_2_0mm_175mm_1sht_foxweld/", "rrc": 181.0}, "MTL": {"art": "WP", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zeleniy__WP_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WP2020175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wp_2_0_175_zelenyy_wp2020175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wp2020", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wp-20-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 31, "mark": "WP", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "97666", "url": "", "rrc": 614.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340043", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wp_175_2_4_mm_zelenyy_ac/", "rrc": 632.0}, "FOXWELD": {"art": "1761", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_2_4mm_175mm_1sht_foxweld/", "rrc": 273.0}, "MTL": {"art": "WP", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zeleniy__WP_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WP2024175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wp_2_4_175_zelenyy_wp2024175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wp2024", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wp-20-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 32, "mark": "WP", "diam": "3", "competitors": {"СВАРОГ": {"art": "97667", "url": "", "rrc": 949.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340040", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wp_175_3_0_mm_zelenyy_ac/", "rrc": 977.0}, "FOXWELD": {"art": "1762", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_3_0mm_175mm_1sht_foxweld/", "rrc": 464.0}, "MTL": {"art": "WP", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zeleniy__WP_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WP2030175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wp_3_0_175_zelenyy_wp2030175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wp2030", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wp-20-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 33, "mark": "WP", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "97668", "url": "", "rrc": 1093.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340041", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wp_175_3_2_mm_zelenyy_ac/", "rrc": 1125.0}, "FOXWELD": {"art": "1763", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_3_2mm_175mm_1sht_foxweld/", "rrc": 467.0}, "MTL": {"art": "WP", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zeleniy__WP_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WP2032175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wp_3_2_175_zelenyy_wp2032175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wp2032", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wp-20-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 34, "mark": "WP", "diam": "4", "competitors": {"СВАРОГ": {"art": "97669", "url": "", "rrc": 1723.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340039", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wp_175_4_0_mm_zelenyy_ac/", "rrc": 1775.0}, "FOXWELD": {"art": "1764", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wp_4_0mm_175mm_1sht_foxweld/", "rrc": 811.0}, "MTL": {"art": "WP", "url": "https://mtlcompany.com/product_volframoviy_elektrod__zeleniy__WP_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WP2040175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wp_4_0_175_zelenyy_wp2040175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "wp2040", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wp-20-d-4-0mm-l-175mm/", "rrc": 1658.0}}}, {"id": 35, "mark": "WTh 20", "diam": "1", "competitors": {"СВАРОГ": {"art": "99599", "url": "https://svarog-rf.ru/products/wth-20", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 36, "mark": "WTh 20", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "99600", "url": "", "rrc": 290.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340022", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wt_20_175_1_6_mm_krasnyy_dc/", "rrc": 299.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WT-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__krasniy__WT-20_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WT2016175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wt_20_1_6kh175_krasnyy_wt2016175/", "rrc": 253.0}, "ОБЕРОН": {"art": "wt2016", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wt-20-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 37, "mark": "WTh 20", "diam": "2", "competitors": {"СВАРОГ": {"art": "99601", "url": "", "rrc": 461.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340023", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wt_20_175_2_0_mm_krasnyy_dc/", "rrc": 474.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WT-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__krasniy__WT-20_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WT2020175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wt_20_2_0kh175_krasnyy_wt2020175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wt2020", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wt-20-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 38, "mark": "WTh 20", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "99602", "url": "", "rrc": 614.3}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340024", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wt_20_175_2_4_mm_krasnyy_dc/", "rrc": 632.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WT-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__krasniy__WT-20_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WT2024175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wt_20_2_4kh175_krasnyy_wt2024175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wt2024", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wt-20-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 39, "mark": "WTh 20", "diam": "3", "competitors": {"СВАРОГ": {"art": "99603", "url": "", "rrc": 949.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340038", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wt_20_175_3_0_mm_krasnyy_dc/", "rrc": 977.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WT-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__krasniy__WT-20_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WT2030175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wt_20_3_0kh175_krasnyy_wt2030175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wt2030", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wt-20-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 40, "mark": "WTh 20", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "99604", "url": "", "rrc": 1093.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340025", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wt_20_175_3_2_mm_krasnyy_dc/", "rrc": 1125.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WT-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__krasniy__WT-20_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WT2032175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wt_20_3_2kh175_krasnyy_wt2032175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wt2032", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wt-20-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 41, "mark": "WTh 20", "diam": "4", "competitors": {"СВАРОГ": {"art": "99605", "url": "", "rrc": 1723.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340026", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wt_20_175_4_0_mm_krasnyy_dc/", "rrc": 1775.0}, "FOXWELD": {"art": "", "url": "", "rrc": null}, "MTL": {"art": "WT-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__krasniy__WT-20_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WT2040175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wt_20_4_0kh175_krasnyy_wt2040175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "wt2040", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wt-20-d-4-0mm-l-175mm/", "rrc": 1658.0}}}, {"id": 42, "mark": "WY-20", "diam": "1", "competitors": {"СВАРОГ": {"art": "97677", "url": "https://svarog-rf.ru/products/wgy-20", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "1741", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_1_0mm_175mm_1sht_foxweld/", "rrc": 65.0}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 43, "mark": "WY-20", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "97678", "url": "", "rrc": 290.3}, "ПТК": {"art": "007.100.141", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wy-20-175mm-o-16", "rrc": 185.0}, "КЕДР": {"art": "7340009", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wy_20_175_1_6mm_temno_siniy_dc/", "rrc": 299.0}, "FOXWELD": {"art": "1742", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_1_6mm_175mm_1sht_foxweld/", "rrc": 123.0}, "MTL": {"art": "WY-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__temno-siniy__WY-20_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WY2016175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wy_20_1_6_175_siniy_wy2016175/#tab2", "rrc": 253.0}, "ОБЕРОН": {"art": "wy2016", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wy-20-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 44, "mark": "WY-20", "diam": "2", "competitors": {"СВАРОГ": {"art": "97679", "url": "", "rrc": 461.3}, "ПТК": {"art": "007.100.142", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wy-20-175mm-o-20", "rrc": 430.0}, "КЕДР": {"art": "7340010", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wy_20_175_2_0mm_temno_siniy_dc/", "rrc": 474.0}, "FOXWELD": {"art": "1743", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_2_0mm_175mm_1sht_foxweld/", "rrc": 191.0}, "MTL": {"art": "WY-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__temno-siniy__WY-20_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WY2020175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wy_20_2_0_175_siniy_wy2020175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wy2020", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wy-20-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 45, "mark": "WY-20", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "97699", "url": "", "rrc": 614.3}, "ПТК": {"art": "007.100.143", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wy-20-175mm-o-24", "rrc": 609.0}, "КЕДР": {"art": "7340011", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wy_20_175_2_4mm_temno_siniy_dc/", "rrc": 632.0}, "FOXWELD": {"art": "1744", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_2_4mm_175mm_1sht_foxweld/", "rrc": 254.0}, "MTL": {"art": "WY-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__temno-siniy__WY-20_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WY2024175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wy_20_2_4_175_siniy_wy2024175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wy2024", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wy-20-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 46, "mark": "WY-20", "diam": "3", "competitors": {"СВАРОГ": {"art": "97680", "url": "", "rrc": 949.5}, "ПТК": {"art": "007.100.144", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wy-20-175mm-o-32", "rrc": 960.0}, "КЕДР": {"art": "7340012", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wy_20_175_3_0mm_temno_siniy_dc/", "rrc": 977.0}, "FOXWELD": {"art": "1745", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_3_0mm_175mm_1sht_foxweld/", "rrc": 464.0}, "MTL": {"art": "WY-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__temno-siniy__WY-20_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WY2030175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wy_20_3_0_175_siniy_wy2030175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wy2030", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wy-20-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 47, "mark": "WY-20", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "97681", "url": "", "rrc": 1093.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340033", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wy_20_175_3_2mm_temno_siniy_dc/", "rrc": 1125.0}, "FOXWELD": {"art": "1746", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_3_2mm_175mm_1sht_foxweld/", "rrc": 448.0}, "MTL": {"art": "WY-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__temno-siniy__WY-20_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WY2032175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wy_20_3_2_175_siniy_wy2032175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wy2032", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wy-20-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 48, "mark": "WY-20", "diam": "4", "competitors": {"СВАРОГ": {"art": "97682", "url": "", "rrc": 1723.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340013", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wy_20_175_4_0mm_temno_siniy_dc/", "rrc": 1775.0}, "FOXWELD": {"art": "1747", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wy_20_4_0mm_175mm_1sht_foxweld/", "rrc": 811.0}, "MTL": {"art": "WY-20", "url": "https://mtlcompany.com/product_volframoviy_elektrod__temno-siniy__WY-20_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WY2040175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wy_20_4_0_175_siniy_wy2040175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "wy2040", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wy-20-d-4-0mm-l-175mm/", "rrc": 1658.0}}}, {"id": 49, "mark": "WZr 8", "diam": "1", "competitors": {"СВАРОГ": {"art": "99613", "url": "https://svarog-rf.ru/products/wzr-8", "rrc": 189.0}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "", "url": "", "rrc": null}, "FOXWELD": {"art": "1773", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_1_0mm_175mm_1sht_foxweld/", "rrc": 65.0}, "MTL": {"art": "", "url": "", "rrc": null}, "STARTWELD": {"art": "", "url": "", "rrc": null}, "ОБЕРОН": {"art": "", "url": "", "rrc": null}}}, {"id": 50, "mark": "WZr 8", "diam": "1,6", "competitors": {"СВАРОГ": {"art": "99614", "url": "", "rrc": 290.3}, "ПТК": {"art": "007.100.151", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wz-8-175mm-o-16", "rrc": 185.0}, "КЕДР": {"art": "7340014", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wz_8_175_1_6_mm_belyy_ac/", "rrc": 299.0}, "FOXWELD": {"art": "1774", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_1_6mm_175mm_1sht_foxweld/", "rrc": 123.0}, "MTL": {"art": "WZ-8", "url": "https://mtlcompany.com/product_volframoviy_elektrod__beliy__WZ-8_d_1.6mm_L_175mm.html", "rrc": 128.0}, "STARTWELD": {"art": "WZ2016175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wz_8_1_6_175_belyy_wz2016175/", "rrc": 253.0}, "ОБЕРОН": {"art": "wz0816", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wz-8-d-1-6mm-l-175mm/", "rrc": 267.0}}}, {"id": 51, "mark": "WZr 8", "diam": "2", "competitors": {"СВАРОГ": {"art": "99615", "url": "", "rrc": 461.3}, "ПТК": {"art": "007.100.152", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wz-8-175mm-o-20", "rrc": 430.0}, "КЕДР": {"art": "7340015", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wz_8_175_2_0_mm_belyy_ac/", "rrc": 474.0}, "FOXWELD": {"art": "1775", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_2_0mm_175mm_1sht_foxweld/", "rrc": 199.0}, "MTL": {"art": "WZ-8", "url": "https://mtlcompany.com/product_volframoviy_elektrod__beliy__WZ-8_d_2.0mm_L_175mm.html", "rrc": 192.0}, "STARTWELD": {"art": "WZ2020175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wz_8_2_0_175_belyy_wz2020175/", "rrc": 399.0}, "ОБЕРОН": {"art": "wz0820", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wz-8-d-2-0mm-l-175mm/", "rrc": 425.0}}}, {"id": 52, "mark": "WZr 8", "diam": "2,4", "competitors": {"СВАРОГ": {"art": "99616", "url": "", "rrc": 614.3}, "ПТК": {"art": "007.100.153", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wz-8-175mm-o-24", "rrc": 609.0}, "КЕДР": {"art": "7340016", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wz_8_175_2_4_mm_belyy_ac/", "rrc": 632.0}, "FOXWELD": {"art": "1776", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_2_4mm_175mm_1sht_foxweld/", "rrc": 291.0}, "MTL": {"art": "WZ-8", "url": "https://mtlcompany.com/product_volframoviy_elektrod__beliy__WZ-8_d_2.4mm_L_175mm.html", "rrc": 296.0}, "STARTWELD": {"art": "WZ2024175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wz_8_2_4_175_belyy_wz2024175/", "rrc": 575.0}, "ОБЕРОН": {"art": "wz0824", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wz-8-d-2-4mm-l-175mm/", "rrc": 607.0}}}, {"id": 53, "mark": "WZr 8", "diam": "3", "competitors": {"СВАРОГ": {"art": "99617", "url": "", "rrc": 949.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340034", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wz_8_175_3_0_mm_belyy_ac/", "rrc": 977.0}, "FOXWELD": {"art": "1777", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_3_0mm_175mm_1sht_foxweld/", "rrc": 464.0}, "MTL": {"art": "WZ-8", "url": "https://mtlcompany.com/product_volframoviy_elektrod__beliy__WZ-8_d_3.0mm_L_175mm.html", "rrc": 456.0}, "STARTWELD": {"art": "WZ2030175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wz_8_3_0_175_belyy_wz2030175/", "rrc": 949.0}, "ОБЕРОН": {"art": "wz0830", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wz-8-d-3-0mm-l-175mm/", "rrc": 950.0}}}, {"id": 54, "mark": "WZr 8", "diam": "3,2", "competitors": {"СВАРОГ": {"art": "99618", "url": "", "rrc": 1093.5}, "ПТК": {"art": "007.100.154", "url": "https://ptk-svarka.ru/product/elektrod-volframovyj-ptk-wz-8-175mm-o-32", "rrc": 960.0}, "КЕДР": {"art": "7340017", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wz_8_175_3_2_mm_belyy_ac/", "rrc": 1125.0}, "FOXWELD": {"art": "1778", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_3_2mm_175mm_1sht_foxweld/", "rrc": 467.0}, "MTL": {"art": "WZ-8", "url": "https://mtlcompany.com/product_volframoviy_elektrod__beliy__WZ-8_d_3.2mm_L_175mm.html", "rrc": 478.0}, "STARTWELD": {"art": "WZ2032175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wz_8_3_2_175_belyy_wz2032175/", "rrc": 1039.0}, "ОБЕРОН": {"art": "wz0832", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wz-8-d-3-2mm-l-175mm/", "rrc": 1017.0}}}, {"id": 55, "mark": "WZr 8", "diam": "4", "competitors": {"СВАРОГ": {"art": "99619", "url": "", "rrc": 1723.5}, "ПТК": {"art": "", "url": "", "rrc": null}, "КЕДР": {"art": "7340018", "url": "https://kedrweld.ru/products/raskhodnye_materialy/elektrody_volframovye/elektrody_volframovye_kedr_wz_8_175_4_0_mm_belyy_ac/", "rrc": 1775.0}, "FOXWELD": {"art": "1779", "url": "https://foxweld.ru/products/item/volframovyy_elektrod_wz_8_4_0mm_175mm_1sht_foxweld/", "rrc": 811.0}, "MTL": {"art": "WZ-8", "url": "https://mtlcompany.com/product_volframoviy_elektrod__beliy__WZ-8_d_4.0mm_L_175mm.html", "rrc": 779.0}, "STARTWELD": {"art": "WZ2040175", "url": "https://startweld.ru/catalog/start_23/volframovyy_elektrod_wz_8_4_0_175_belyy_wz2040175/", "rrc": 1688.0}, "ОБЕРОН": {"art": "wz0840", "url": "https://oberon-weld.ru/product/elektrod-volframovyy-oberon-wz-8-d-4-0mm-l-175mm/", "rrc": 1658.0}}}];
+const COMPETITORS = ["СВАРОГ", "ПТК", "КЕДР", "FOXWELD", "MTL", "STARTWELD", "ОБЕРОН"];
+const MARKS = ["WCe 20", "WGLa 15", "WLa 15", "WLa 20", "WP", "WTh 20", "WY-20", "WZr 8"];
+const MARK_COLORS = {"WCe 20": "#7D8790", "WGLa 15": "#B9A8CF", "WLa 15": "#D8B84E", "WLa 20": "#5F7FBF", "WP": "#5A9B6E", "WTh 20": "#C96D63", "WY-20": "#647AA3", "WZr 8": "#AEB4BB", "WGLa 15Zr8Y8": "#B9A8CF"};
+
+const PRICE_UPDATE_CONFIG = {
+  timezone: "Europe/Moscow",
+  nightStartHour: 0,
+  nightEndHour: 6,
+
+  /*
+    Для стабильного обновления на хостинге лучше указать свой серверный прокси.
+    Формат: proxyEndpoint + encodeURIComponent(url)
+    Пример: "/price-proxy?url="
+  */
+  proxyEndpoint: "",
+
+  corsFallbacks: [
+    "https://api.allorigins.win/raw?url=",
+    "https://corsproxy.io/?"
+  ],
+
+  commonSelectors: [
+    "[itemprop='price']",
+    "meta[itemprop='price']",
+    "meta[property='product:price:amount']",
+    "meta[name='product:price:amount']",
+    "[data-price]",
+    "[data-product-price]",
+    "[data-offer-price]",
+    ".price",
+    ".product-price",
+    ".current-price",
+    ".price__value",
+    ".price-value",
+    ".js-price",
+    ".catalog-element-price",
+    ".product-item-detail-price-current",
+    ".woocommerce-Price-amount",
+    ".amount"
+  ],
+
+  domainRules: {
+    "svarog-rf.ru": {
+      selectors: ["[itemprop='price']", ".price", ".product-price", "[data-price]"],
+      labels: ["РРЦ", "Цена", "Розничная цена"]
+    },
+    "ptk-svarka.ru": {
+      selectors: [".product-item-detail-price-current", ".catalog-detail__price", ".price", ".price__value", "[itemprop='price']", "[data-price]"],
+      labels: ["РРЦ", "Розничная цена", "Цена"]
+    },
+    "kedrweld.ru": {
+      selectors: [".product__price", ".catalog-detail__price", ".price", ".price__value", "[itemprop='price']", "[data-price]"],
+      labels: ["РРЦ", "Цена", "Розничная цена"]
+    },
+    "foxweld.ru": {
+      selectors: [".element-price", ".product-price", ".price", ".price__value", "[itemprop='price']", "[data-price]"],
+      labels: ["РРЦ", "Цена", "Розничная цена"]
+    },
+    "mtlcompany.com": {
+      selectors: [".price", ".product-price", ".price_value", "[itemprop='price']", "[data-price]"],
+      labels: ["РРЦ", "Цена", "Стоимость", "Розничная цена"]
+    },
+    "startweld.ru": {
+      selectors: [".product-info__price", ".product-price", ".price", ".price__value", "[itemprop='price']", "[data-price]"],
+      labels: ["РРЦ", "Цена", "Розничная цена"]
+    },
+    "oberon-weld.ru": {
+      selectors: [".woocommerce-Price-amount", ".amount", ".price", ".product-price", "[itemprop='price']", "[data-price]"],
+      labels: ["РРЦ", "Цена", "Розничная цена"]
+    }
+  },
+
+  minPrice: 10,
+  maxPrice: 100000
+};
+
+let activeMark = "";
+let rrcValues = {};
+
+function initValues(){
+  MATRIX_DATA.forEach(row => {
+    rrcValues[row.id] = {};
+    COMPETITORS.forEach(comp => {
+      const v = row.competitors[comp] && row.competitors[comp].rrc;
+      rrcValues[row.id][comp] = (v === null || v === undefined) ? null : Number(v);
+    });
+  });
+}
+
+function safeUrl(url) {
+  if(!url) return "#";
+  return String(url).trim();
+}
+function parseNumberRu(value){
+  if(value === null || value === undefined) return null;
+  const cleaned = String(value).replace(/\s+/g,"").replace(/[^\d,.\-]/g,"").replace(",",".");
+  const m = cleaned.match(/\d+(?:\.\d+)?/);
+  if(!m) return null;
+  const n = parseFloat(m[0]);
+  return Number.isFinite(n) ? n : null;
+}
+function formatPriceRu(value, comp){
+  if(value === null || value === undefined || !Number.isFinite(Number(value))) return "—";
+  if(comp === "СВАРОГ") return Number(value).toFixed(1).replace(".",",");
+  return String(Math.round(Number(value)));
+}
+function formatExcelPrice(value){
+  if(value === null || value === undefined || !Number.isFinite(Number(value))) return "";
+  return String(Math.round(Number(value)));
+}
+function formatPercentRu(value){
+  if(value === null || value === undefined || !Number.isFinite(Number(value))) return "—";
+  return Number(value).toFixed(1).replace(".",",") + "%";
+}
+function getDiscount(comp){
+  const input = document.querySelector(`input[data-discount="${comp}"]`);
+  const v = parseNumberRu(input ? input.value : "");
+  return v ? v / 100 : 0;
+}
+function calcOpt(rowId, comp){
+  const rrc = rrcValues[rowId] ? rrcValues[rowId][comp] : null;
+  if(rrc === null || rrc === undefined) return null;
+  return rrc - (rrc * getDiscount(comp));
+}
+function calcAnalysis(rowId, comp, type){
+  if(comp === "СВАРОГ") return null;
+  const svarog = type === "rrc" ? rrcValues[rowId]["СВАРОГ"] : calcOpt(rowId, "СВАРОГ");
+  const competitor = type === "rrc" ? rrcValues[rowId][comp] : calcOpt(rowId, comp);
+  if(!svarog || !competitor) return null;
+  return ((svarog - competitor) / competitor) * 100;
+}
+function classByPercent(v){
+  if(v === null || v === undefined || !Number.isFinite(v)) return "neutral";
+  if(v < 0) return "positive";
+  if(v > 0) return "negative";
+  return "neutral";
+}
+function getMoscowDate(){
+  return new Date(new Date().toLocaleString("en-US", {timeZone: PRICE_UPDATE_CONFIG.timezone}));
+}
+function isNightMoscow(){
+  const h = getMoscowDate().getHours();
+  return h >= PRICE_UPDATE_CONFIG.nightStartHour && h < PRICE_UPDATE_CONFIG.nightEndHour;
+}
+function setUpdateStatus(text, type){
+  const s = document.getElementById("updateStatus");
+  const d = document.getElementById("updateDot");
+  if(s) s.textContent = text;
+  if(d){ d.className = "status-dot"; if(type) d.classList.add(type); }
+}
+function buildDiscounts(){
+  const panel = document.getElementById("discountPanel");
+  COMPETITORS.forEach(comp => {
+    const item = document.createElement("label");
+    item.className = "discount-item";
+    item.innerHTML = `<span>${comp}</span><input type="number" min="0" max="100" step="0.1" placeholder="%" data-discount="${comp}" oninput="recalculateAll()">`;
+    panel.appendChild(item);
+  });
+}
+function buildFilters(){
+  const filter = document.getElementById("markFilter");
+  filter.innerHTML = `<button class="mark-btn active" onclick="setMark('')">Все марки</button>` + MARKS.map(mark => {
+    const color = MARK_COLORS[mark] || "#aeb4bb";
+    return `<button class="mark-btn" onclick="setMark('${mark}')"><span class="swatch" style="background:${color}"></span>${mark}</button>`;
+  }).join("");
+}
+function setMark(mark){
+  activeMark = mark;
+  document.querySelectorAll(".mark-btn").forEach(btn => btn.classList.remove("active"));
+  const buttons = Array.from(document.querySelectorAll(".mark-btn"));
+  const found = buttons.find(b => b.textContent.trim() === (mark || "Все марки"));
+  if(found) found.classList.add("active");
+  document.querySelectorAll(".mark-card").forEach(card => {
+    card.classList.toggle("hidden", mark && card.dataset.mark !== mark);
+  });
+}
+function cellRrc(row, comp){
+  const data = row.competitors[comp] || {};
+  const value = rrcValues[row.id][comp];
+  const href = safeUrl(data.url);
+  if(value === null || value === undefined) return `<span class="missing">—</span>`;
+  const cls = comp === "СВАРОГ" ? "price-link svarog-price" : "price-link competitor-price";
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="${cls}" data-row="${row.id}" data-comp="${comp}" title="${comp === 'СВАРОГ' ? 'Ссылка СВАРОГ по марке/позиции: ' : 'Ссылка на РРЦ конкурента: '}${href !== '#' ? href : 'ссылка не указана'}">${formatPriceRu(value, comp)}</a>`;
+}
+function buildPriceTable(rows, type){
+  const head = `<tr><th>Ø</th>${COMPETITORS.map(c => `<th>${c}</th>`).join("")}</tr>`;
+  const body = rows.map(row => {
+    const tds = COMPETITORS.map(comp => {
+      if(type === "rrc") return `<td>${cellRrc(row, comp)}</td>`;
+      const opt = calcOpt(row.id, comp);
+      return `<td data-opt-row="${row.id}" data-opt-comp="${comp}">${formatPriceRu(opt, comp)}</td>`;
+    }).join("");
+    return `<tr><td>${row.diam}</td>${tds}</tr>`;
+  }).join("");
+  return `<table>${head}${body}</table>`;
+}
+function buildAnalysisTable(rows){
+  const comps = COMPETITORS.filter(c => c !== "СВАРОГ");
+  const shortNames = {
+    "STARTWELD":"START",
+    "FOXWELD":"FOX",
+    "ОБЕРОН":"ОБЕРОН",
+    "КЕДР":"КЕДР",
+    "ПТК":"ПТК",
+    "MTL":"MTL"
+  };
+  function subTable(type, title){
+    const head = `<tr>${comps.map(c => `<th title="${c}"><span class="comp-full">${c}</span></th>`).join("")}</tr>`;
+    const body = rows.map(row => {
+      const tds = comps.map(comp => {
+        const v = calcAnalysis(row.id, comp, type);
+        return `<td title="${row.mark} Ø ${row.diam} · ${comp}" data-analysis-row="${row.id}" data-analysis-comp="${comp}" data-analysis-type="${type}" class="${classByPercent(v)}">${formatPercentRu(v)}</td>`;
+      }).join("");
+      return `<tr>${tds}</tr>`;
+    }).join("");
+    return `<div class="analysis-sub ${type === "rrc" ? "rrc-sub" : "opt-sub"}"><h4>${title}</h4><table class="analysis-table">${head}${body}</table></div>`;
+  }
+  return `<div class="analysis-split">${subTable("rrc","АНАЛИЗ РРЦ")}${subTable("opt","АНАЛИЗ ОПТ")}<div class="analysis-note"><span>Отклонение к СВАРОГ, %</span><span>минус — СВАРОГ дешевле</span></div></div>`;
+}
+
+function firstSvarogUrl(rows){
+  for(const r of rows) {
+    const u = r.competitors["СВАРОГ"] && r.competitors["СВАРОГ"].url;
+    if(u) return u;
+  }
+  return "#";
+}
+function buildMatrix(){
+  const root = document.getElementById("matrix");
+  root.innerHTML = MARKS.map(mark => {
+    const color = MARK_COLORS[mark] || "#aeb4bb";
+    const rows = MATRIX_DATA.filter(r => r.mark === mark);
+    const soft = color + "22";
+    const url = firstSvarogUrl(rows);
+    return `<section class="mark-card" data-mark="${mark}" style="--mark-soft:${soft}">
+      <div class="mark-head">
+        <div class="mark-title"><span class="swatch" style="background:${color}"></span><a href="${safeUrl(url)}" target="_blank" rel="noopener noreferrer">${mark}</a></div>
+        <div class="mark-meta">Позиций: ${rows.length} · РРЦ / ОПТ / АНАЛИЗ</div>
+      </div>
+      <div class="zones">
+        <div class="zone rrc"><h3>РРЦ</h3>${buildPriceTable(rows, "rrc")}</div>
+        <div class="zone opt"><h3>ОПТ</h3>${buildPriceTable(rows, "opt")}</div>
+        <div class="zone analysis"><h3>АНАЛИЗ</h3>${buildAnalysisTable(rows)}</div>
+      </div>
+    </section>`;
+  }).join("");
+}
+function recalculateAll(){
+  document.querySelectorAll("[data-opt-row]").forEach(td => {
+    const opt = calcOpt(Number(td.dataset.optRow), td.dataset.optComp);
+    td.textContent = formatPriceRu(opt, td.dataset.optComp);
+  });
+  document.querySelectorAll("[data-analysis-row]").forEach(td => {
+    const v = calcAnalysis(Number(td.dataset.analysisRow), td.dataset.analysisComp, td.dataset.analysisType);
+    td.textContent = formatPercentRu(v);
+    td.className = classByPercent(v);
+  });
+}
+function getHostName(url){
+  try {
+    return new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+  } catch(e) {
+    return "";
+  }
+}
+
+function getDomainRule(url){
+  const host = getHostName(url);
+  const keys = Object.keys(PRICE_UPDATE_CONFIG.domainRules || {});
+  for(const key of keys){
+    if(host === key || host.endsWith("." + key)) return PRICE_UPDATE_CONFIG.domainRules[key];
+  }
+  return {selectors: [], labels: []};
+}
+
+function uniqArray(arr){
+  return Array.from(new Set((arr || []).filter(Boolean)));
+}
+
+function normalizeFetchedText(text){
+  if(!text) return "";
+  let t = String(text);
+  try {
+    const obj = JSON.parse(t);
+    if(obj && typeof obj === "object"){
+      if(typeof obj.contents === "string") return obj.contents;
+      if(typeof obj.data === "string") return obj.data;
+      if(typeof obj.html === "string") return obj.html;
+    }
+  } catch(e) {}
+  return t;
+}
+
+async function fetchText(url){
+  let errors = [];
+
+  const attempts = [];
+  if(PRICE_UPDATE_CONFIG.proxyEndpoint){
+    attempts.push(PRICE_UPDATE_CONFIG.proxyEndpoint + encodeURIComponent(url));
+  }
+
+  for(const prefix of PRICE_UPDATE_CONFIG.corsFallbacks){
+    // corsproxy.io expects raw URL after ?, allorigins expects encoded URL.
+    const target = prefix.indexOf("corsproxy.io") !== -1 ? prefix + url : prefix + encodeURIComponent(url);
+    attempts.push(target);
+  }
+
+  for(const target of attempts){
+    try {
+      const res = await fetch(target, {cache:"no-store"});
+      if(res.ok) return normalizeFetchedText(await res.text());
+      errors.push(target + " HTTP " + res.status);
+    } catch(e) {
+      errors.push(target + " " + e.message);
+    }
+  }
+
+  throw new Error(errors.join("; ") || "Не удалось получить страницу");
+}
+
+function addCandidate(candidates, value, source, weight, raw){
+  const price = parseNumberRu(value);
+  if(!price || price < PRICE_UPDATE_CONFIG.minPrice || price > PRICE_UPDATE_CONFIG.maxPrice) return;
+  const rawText = String(raw || value || "");
+  const lower = rawText.toLowerCase();
+
+  // Отсекаем очевидные размеры/диаметры без признаков цены.
+  const hasCurrency = /₽|руб|р\.|rub|price|цена|ррц/i.test(rawText);
+  const looksLikeDimension = /мм|mm|ø|диаметр|размер|175|1\.6|2\.4|3\.2/i.test(rawText);
+  if(looksLikeDimension && !hasCurrency && price < 50) return;
+
+  candidates.push({
+    price,
+    source,
+    weight: weight || 1,
+    raw: rawText.slice(0, 160)
+  });
+}
+
+function scoreCandidate(candidate, expectedPrice){
+  let score = candidate.weight || 1;
+
+  if(expectedPrice && Number.isFinite(Number(expectedPrice))){
+    const expected = Number(expectedPrice);
+    const diff = Math.abs(candidate.price - expected);
+    const rel = diff / Math.max(expected, 1);
+
+    // Если цена близка к предыдущему значению, повышаем уверенность.
+    if(rel <= 0.02) score += 8;
+    else if(rel <= 0.05) score += 6;
+    else if(rel <= 0.15) score += 4;
+    else if(rel <= 0.35) score += 2;
+    else if(candidate.price < expected * 0.25 || candidate.price > expected * 4) score -= 5;
+  }
+
+  if(/₽|руб|rub/i.test(candidate.raw)) score += 2;
+  if(/ррц|розничная|цена/i.test(candidate.raw)) score += 2;
+
+  return score;
+}
+
+function chooseBestCandidate(candidates, expectedPrice){
+  if(!candidates.length) return null;
+  candidates.sort((a,b) => scoreCandidate(b, expectedPrice) - scoreCandidate(a, expectedPrice));
+  return candidates[0];
+}
+
+function extractPriceFromJsonLd(doc, candidates){
+  const scripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'));
+  for(const s of scripts){
+    try {
+      const data = JSON.parse(s.textContent.trim());
+      const stack = Array.isArray(data) ? data.slice() : [data];
+
+      while(stack.length){
+        const obj = stack.shift();
+        if(!obj || typeof obj !== "object") continue;
+
+        if(obj.offers){
+          const offers = Array.isArray(obj.offers) ? obj.offers : [obj.offers];
+          for(const offer of offers){
+            addCandidate(candidates, offer.price || offer.lowPrice || offer.highPrice, "jsonld.offers.price", 12, JSON.stringify(offer).slice(0,180));
+          }
+        }
+
+        if(obj.price) addCandidate(candidates, obj.price, "jsonld.price", 10, JSON.stringify(obj).slice(0,180));
+
+        Object.keys(obj).forEach(k => {
+          if(typeof obj[k] === "object") stack.push(obj[k]);
+        });
+      }
+    } catch(e) {}
+  }
+}
+
+function extractPriceFromMeta(doc, candidates){
+  const metaSelectors = [
+    "meta[itemprop='price']",
+    "meta[property='product:price:amount']",
+    "meta[name='product:price:amount']",
+    "meta[property='og:price:amount']",
+    "meta[name='price']"
+  ];
+
+  for(const selector of metaSelectors){
+    const nodes = Array.from(doc.querySelectorAll(selector));
+    for(const node of nodes){
+      addCandidate(candidates, node.getAttribute("content"), selector, 11, node.outerHTML);
+    }
+  }
+}
+
+function extractPriceFromSelectors(doc, candidates, url){
+  const rule = getDomainRule(url);
+  const selectors = uniqArray([...(rule.selectors || []), ...PRICE_UPDATE_CONFIG.commonSelectors]);
+
+  for(const selector of selectors){
+    const nodes = Array.from(doc.querySelectorAll(selector)).slice(0, 12);
+    for(const node of nodes){
+      const raw = node.getAttribute("content") ||
+        node.getAttribute("data-price") ||
+        node.getAttribute("data-product-price") ||
+        node.getAttribute("data-offer-price") ||
+        node.textContent;
+      addCandidate(candidates, raw, "selector:" + selector, 8, raw);
+    }
+  }
+}
+
+function extractPriceFromText(doc, candidates, url){
+  const rule = getDomainRule(url);
+  const text = doc.body ? doc.body.innerText : doc.documentElement.innerText;
+  const labels = uniqArray([...(rule.labels || []), "РРЦ", "розничная цена", "цена", "стоимость"]);
+
+  for(const label of labels){
+    const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(escaped + "\\\\D{0,80}(\\\\d[\\\\d\\\\s.,]{2,})\\\\s*(?:₽|руб\\\\.?|р\\\\.?|RUB)?", "ig");
+    let match;
+    while((match = re.exec(text)) !== null){
+      addCandidate(candidates, match[1], "text-label:" + label, 6, match[0]);
+    }
+  }
+
+  // Последний резерв: числа рядом с валютой.
+  const currencyRe = /(\d[\d\s.,]{2,})\s*(?:₽|руб\.?|р\.|RUB)/ig;
+  let match;
+  while((match = currencyRe.exec(text)) !== null){
+    addCandidate(candidates, match[1], "text-currency", 4, match[0]);
+  }
+}
+
+function extractPriceFromHtml(htmlText, url, expectedPrice){
+  const doc = new DOMParser().parseFromString(htmlText, "text/html");
+  const candidates = [];
+
+  extractPriceFromJsonLd(doc, candidates);
+  extractPriceFromMeta(doc, candidates);
+  extractPriceFromSelectors(doc, candidates, url);
+  extractPriceFromText(doc, candidates, url);
+
+  const best = chooseBestCandidate(candidates, expectedPrice);
+  return best ? best.price : null;
+}
+function savePriceHistory(item){
+  const key = "ve_rrc_price_history";
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e) {}
+  history.push(item);
+  localStorage.setItem(key, JSON.stringify(history.slice(-2000)));
+}
+async function updateAllRRCPrices(){
+  const links = Array.from(document.querySelectorAll("a.competitor-price")).filter(a => a.href && !a.href.endsWith("#"));
+  const started = new Date();
+  const startedMsk = getMoscowDate();
+  if(!links.length){
+    setUpdateStatus("Нет активных ссылок для обновления РРЦ.", "error");
+    return;
+  }
+  setUpdateStatus("Обновление РРЦ: выполняется сбор цен…", "loading");
+  let ok = 0, fail = 0;
+  for(const link of links){
+    const rowId = Number(link.dataset.row);
+    const comp = link.dataset.comp;
+    const oldPrice = rrcValues[rowId][comp];
+    try{
+      const text = await fetchText(link.href);
+      const newPrice = extractPriceFromHtml(text, link.href, oldPrice);
+      if(!newPrice) throw new Error("Цена не найдена");
+      rrcValues[rowId][comp] = newPrice;
+      link.textContent = formatPriceRu(newPrice, comp);
+      savePriceHistory({
+        updatedAt: started.toISOString(),
+        updatedAtMsk: startedMsk.toLocaleString("ru-RU"),
+        mark: MATRIX_DATA.find(r => r.id === rowId).mark,
+        diameter: MATRIX_DATA.find(r => r.id === rowId).diam,
+        competitor: comp,
+        url: link.href,
+        oldPrice: oldPrice,
+        newPrice: newPrice,
+        delta: oldPrice ? newPrice - oldPrice : null,
+        deltaPercent: oldPrice ? ((newPrice - oldPrice) / oldPrice) * 100 : null,
+        status: "OK"
+      });
+      ok++;
+    } catch(e){
+      savePriceHistory({
+        updatedAt: started.toISOString(),
+        updatedAtMsk: startedMsk.toLocaleString("ru-RU"),
+        mark: MATRIX_DATA.find(r => r.id === rowId).mark,
+        diameter: MATRIX_DATA.find(r => r.id === rowId).diam,
+        competitor: comp,
+        url: link.href,
+        oldPrice: oldPrice,
+        newPrice: null,
+        delta: null,
+        deltaPercent: null,
+        status: "ERROR: " + e.message
+      });
+      fail++;
+    }
+  }
+  recalculateAll();
+  const msg = `Последнее обновление: ${startedMsk.toLocaleString("ru-RU")} МСК. Успешно: ${ok}, ошибок: ${fail}`;
+  setUpdateStatus(msg, fail ? "error" : "success");
+  localStorage.setItem("ve_last_update_status", msg);
+}
+function scheduleNightUpdate(){
+  const now = getMoscowDate();
+  const key = now.toISOString().slice(0,10);
+  const last = localStorage.getItem("ve_last_auto_update_date");
+  if(isNightMoscow() && last !== key){
+    localStorage.setItem("ve_last_auto_update_date", key);
+    updateAllRRCPrices();
+  }
+}
+function exportExcel(){
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("ve_rrc_price_history") || "[]"); } catch(e) {}
+  const lastStatus = localStorage.getItem("ve_last_update_status") || "Обновление не выполнялось";
+  const reportDate = new Date().toLocaleDateString("ru-RU");
+  const compsWithoutSvarog = COMPETITORS.filter(c => c !== "СВАРОГ");
+
+  function discountLine(){
+    return "Скидки: " + COMPETITORS.map(c => {
+      const input = document.querySelector(`input[data-discount="${c}"]`);
+      const val = input && input.value ? input.value : "0";
+      return c + " " + val + "%";
+    }).join(" | ");
+  }
+
+  function rubDelta(v){
+    if(v === null || v === undefined || !Number.isFinite(Number(v))) return "";
+    return String(Math.round(Number(v)));
+  }
+
+  function changeClass(v){
+    if(v === null || v === undefined || !Number.isFinite(Number(v)) || Number(v) === 0) return "neutral";
+    return Number(v) > 0 ? "price-up" : "price-down";
+  }
+
+  let report = "";
+  MARKS.forEach(mark => {
+    const rows = MATRIX_DATA.filter(r => r.mark === mark);
+    if(!rows.length) return;
+    const markUrl = firstSvarogUrl(rows);
+
+    report += `<tr class="mark-row"><td colspan="99"><a href="${safeUrl(markUrl)}">${mark} — ${rows.length} поз.</a></td></tr>`;
+    report += `<table class="matrix-table">`;
+    report += `<colgroup>`;
+    report += `<col class="diam-col"><col class="code-col">`;
+    COMPETITORS.forEach(() => report += `<col class="price-col">`);
+    COMPETITORS.forEach(() => report += `<col class="price-col">`);
+    compsWithoutSvarog.forEach(() => report += `<col class="analysis-col">`);
+    compsWithoutSvarog.forEach(() => report += `<col class="analysis-col">`);
+    report += `</colgroup>`;
+
+    report += `<tr class="group-row">
+      <th colspan="2">Позиция</th>
+      <th colspan="${COMPETITORS.length}">РРЦ</th>
+      <th colspan="${COMPETITORS.length}">ОПТ</th>
+      <th colspan="${compsWithoutSvarog.length * 2}">АНАЛИЗ</th>
+    </tr>`;
+
+    report += `<tr class="subgroup-row">
+      <th rowspan="2">Ø</th>
+      <th rowspan="2">Код СВАРОГ</th>`;
+
+    COMPETITORS.forEach(c => report += `<th rowspan="2">${c}</th>`);
+    COMPETITORS.forEach(c => report += `<th rowspan="2">${c}</th>`);
+    report += `<th colspan="${compsWithoutSvarog.length}">Анализ РРЦ к СВАРОГ</th>`;
+    report += `<th colspan="${compsWithoutSvarog.length}">Анализ ОПТ к СВАРОГ</th>`;
+    report += `</tr>`;
+
+    report += `<tr class="analysis-head-row">`;
+    compsWithoutSvarog.forEach(c => report += `<th>${c}</th>`);
+    compsWithoutSvarog.forEach(c => report += `<th>${c}</th>`);
+    report += `</tr>`;
+
+    rows.forEach(row => {
+      const svarogCode = row.competitors["СВАРОГ"] && row.competitors["СВАРОГ"].art ? row.competitors["СВАРОГ"].art : "";
+      const svarogUrl = row.competitors["СВАРОГ"] && row.competitors["СВАРОГ"].url ? row.competitors["СВАРОГ"].url : "#";
+
+      report += `<tr>`;
+      report += `<td class="diameter">${row.diam}</td>`;
+      report += `<td><a href="${safeUrl(svarogUrl)}">${svarogCode}</a></td>`;
+
+      COMPETITORS.forEach(c => {
+        const url = row.competitors[c] && row.competitors[c].url ? row.competitors[c].url : "#";
+        const price = c === "СВАРОГ" ? formatPriceRu(rrcValues[row.id][c], c) : formatExcelPrice(rrcValues[row.id][c]);
+        report += `<td><a href="${safeUrl(url)}">${price}</a></td>`;
+      });
+
+      COMPETITORS.forEach(c => {
+        const opt = c === "СВАРОГ" ? formatPriceRu(calcOpt(row.id,c), c) : formatExcelPrice(calcOpt(row.id,c));
+        report += `<td>${opt}</td>`;
+      });
+
+      compsWithoutSvarog.forEach(c => {
+        const v = calcAnalysis(row.id,c,"rrc");
+        const cls = v < 0 ? "good" : (v > 0 ? "bad" : "neutral");
+        report += `<td class="${cls}">${formatPercentRu(v)}</td>`;
+      });
+
+      compsWithoutSvarog.forEach(c => {
+        const v = calcAnalysis(row.id,c,"opt");
+        const cls = v < 0 ? "good" : (v > 0 ? "bad" : "neutral");
+        report += `<td class="${cls}">${formatPercentRu(v)}</td>`;
+      });
+
+      report += `</tr>`;
+    });
+
+    report += `</table>`;
+  });
+
+  const changedHistory = history.filter(h =>
+    h && h.newPrice !== null && h.newPrice !== undefined &&
+    h.oldPrice !== null && h.oldPrice !== undefined &&
+    Number(h.delta) !== 0
+  );
+
+  const changedRows = changedHistory.slice(-500).map(h => `
+    <tr class="${changeClass(h.delta)}">
+      <td>${h.updatedAtMsk||""}</td>
+      <td>${h.mark||""}</td>
+      <td>${h.diameter||""}</td>
+      <td>${h.competitor||""}</td>
+      <td><a href="${h.url||"#"}">${h.url||""}</a></td>
+      <td>${formatExcelPrice(h.oldPrice)}</td>
+      <td>${formatExcelPrice(h.newPrice)}</td>
+      <td>${rubDelta(h.delta)}</td>
+      <td>${formatPercentRu(h.deltaPercent)}</td>
+      <td>${Number(h.delta) > 0 ? "Цена выросла" : "Цена снизилась"}</td>
+    </tr>`).join("");
+
+  const allHistoryRows = history.slice(-500).map(h => `
+    <tr class="${changeClass(h.delta)}">
+      <td>${h.updatedAtMsk||""}</td>
+      <td>${h.mark||""}</td>
+      <td>${h.diameter||""}</td>
+      <td>${h.competitor||""}</td>
+      <td><a href="${h.url||"#"}">${h.url||""}</a></td>
+      <td>${formatExcelPrice(h.oldPrice)}</td>
+      <td>${formatExcelPrice(h.newPrice)}</td>
+      <td>${rubDelta(h.delta)}</td>
+      <td>${formatPercentRu(h.deltaPercent)}</td>
+      <td>${h.status||""}</td>
+    </tr>`).join("");
+
+  const excelHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:x="urn:schemas-microsoft-com:office:excel"
+    xmlns="http://www.w3.org/TR/REC-html40">
+  <head>
+    <meta charset="UTF-8">
+    <!--[if gte mso 9]><xml>
+      <x:ExcelWorkbook>
+        <x:ExcelWorksheets>
+          <x:ExcelWorksheet>
+            <x:Name>Матрица</x:Name>
+            <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+          </x:ExcelWorksheet>
+          <x:ExcelWorksheet>
+            <x:Name>Отчет парсинга</x:Name>
+            <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+          </x:ExcelWorksheet>
+        </x:ExcelWorksheets>
+      </x:ExcelWorkbook>
+    </xml><![endif]-->
+    <style>
+      body{font-family:Arial,sans-serif;color:#0f2a44;font-size:8pt;background:#fff;margin:0}
+      table{border-collapse:collapse;width:100%;font-size:6.8pt;table-layout:fixed}
+      th,td{border:1px solid #aebdca;padding:1px 2px;text-align:center;white-space:nowrap;line-height:1;vertical-align:middle;height:13px}
+      .title{font-size:11pt;font-weight:700;text-align:center;background:#fff2b2;border:2px solid #1f2d3d;color:#0f2a44;padding:2px}
+      .meta td{text-align:left;background:#eef3f8;border:1px solid #aebdca;font-size:7pt;padding:2px}
+      .mark-row td{background:#f5f8fb;border:1px solid #aebdca;text-align:left;font-weight:700;color:#0645ad;padding:2px}
+      .group-row th{background:#e9f0f7;font-weight:700;font-size:7.8pt;color:#0f2a44}
+      .subgroup-row th{background:#eef5fb;font-weight:700;color:#0f2a44;font-size:6.8pt}
+      .analysis-head-row th{background:#f3f8ec;font-weight:700;color:#34495e;font-size:6.6pt}
+      .diameter{background:#eef7f0;color:#245a36;font-weight:700}
+      .good{color:#1e8449;font-weight:700}.bad{color:#b03a2e;font-weight:700}.neutral{color:#697681}
+      a{color:#0645ad;text-decoration:underline}
+      .diam-col{width:28px}.code-col{width:48px}.price-col{width:42px}.analysis-col{width:46px}
+      .parser-title{background:#f3f7f5;border-left:4px solid #7fbf96;text-align:left;font-weight:700;padding:4px}
+      .parser-table{table-layout:fixed}
+      .parser-table th{background:#36424f;color:#fff;font-size:6.8pt}
+      .parser-table td{font-size:6.8pt;white-space:normal;padding:1px 2px}
+      .parser-table col.date{width:86px}.parser-table col.mark{width:52px}.parser-table col.diam{width:26px}
+      .parser-table col.comp{width:58px}.parser-table col.url{width:155px}
+      .parser-table col.price{width:50px}.parser-table col.delta{width:50px}.parser-table col.status{width:70px}
+      .price-up td{background:#fff0f0;color:#9b2d20;font-weight:700}
+      .price-down td{background:#eef8f1;color:#1e8449;font-weight:700}
+      .summary-row td{background:#f8fafc;text-align:left;font-weight:700}
+
+      .matrix-table th:nth-child(3),.matrix-table td:nth-child(3),
+      .matrix-table th:nth-child(10),.matrix-table td:nth-child(10),
+      .matrix-table th:nth-child(17),.matrix-table td:nth-child(17){
+        border-left:2px solid #7d92a6;
+      }
+      .matrix-table tr:nth-child(even) td{background:#fbfdff}
+
+      @page{margin:.25in .18in .25in .18in;mso-page-orientation:landscape}
+    </style>
+  </head>
+  <body>
+    <div class="Section1">
+      <table class="meta">
+        <tr><td class="title">КОНКУРЕНТНАЯ МАТРИЦА — ВОЛЬФРАМОВЫЕ ЭЛЕКТРОДЫ</td></tr>
+        <tr><td><b>Дата отчета:</b> ${reportDate}</td></tr>
+        <tr><td>${discountLine()}</td></tr>
+        <tr><td><b>Статус обновления РРЦ:</b> ${lastStatus}</td></tr>
+      </table>
+      <br>
+      ${report}
+    </div>
+
+    <br style="page-break-before:always;mso-special-character:line-break">
+
+    <div class="Section2">
+      <table class="parser-table">
+        <colgroup>
+          <col class="date"><col class="mark"><col class="diam"><col class="comp"><col class="url">
+          <col class="price"><col class="price"><col class="delta"><col class="delta"><col class="status">
+        </colgroup>
+        <tr><td colspan="10" class="parser-title">ОТЧЕТ ПО ПАРСИНГУ РРЦ С САЙТОВ КОНКУРЕНТОВ</td></tr>
+        <tr class="summary-row"><td colspan="10">Показаны только позиции конкурентов, по которым изменилась РРЦ относительно предыдущего значения. Ссылки активные для проверки цены на сайте конкурента.</td></tr>
+        <tr>
+          <th>Дата/время МСК</th><th>Марка</th><th>Ø</th><th>Конкурент</th><th>Ссылка</th>
+          <th>Было, РРЦ</th><th>Стало, РРЦ</th><th>Изм., руб.</th><th>Изм., %</th><th>Итог</th>
+        </tr>
+        ${changedRows || '<tr><td colspan="10">Изменений цен относительно предыдущего парсинга не зафиксировано</td></tr>'}
+      </table>
+
+      <br>
+
+      <table class="parser-table">
+        <colgroup>
+          <col class="date"><col class="mark"><col class="diam"><col class="comp"><col class="url">
+          <col class="price"><col class="price"><col class="delta"><col class="delta"><col class="status">
+        </colgroup>
+        <tr><td colspan="10" class="parser-title">ПОЛНЫЙ ЖУРНАЛ ПАРСИНГА РРЦ С САЙТОВ КОНКУРЕНТОВ</td></tr>
+        <tr>
+          <th>Дата/время МСК</th><th>Марка</th><th>Ø</th><th>Конкурент</th><th>Ссылка</th>
+          <th>Пред. РРЦ</th><th>Новая РРЦ</th><th>Изм., руб.</th><th>Изм., %</th><th>Статус</th>
+        </tr>
+        ${allHistoryRows || '<tr><td colspan="10">Данных по обновлению цен пока нет</td></tr>'}
+      </table>
+    </div>
+  </body>
+  </html>`;
+
+  const blob = new Blob([excelHtml], {type:"application/vnd.ms-excel;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Отчет_ВЭ_конкурентная_матрица_и_парсинг.xls";
+  a.click();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initValues(); buildDiscounts(); buildFilters(); buildMatrix(); recalculateAll();
+  const lastStatus = localStorage.getItem("ve_last_update_status");
+  if(lastStatus) setUpdateStatus(lastStatus, "success");
+  scheduleNightUpdate();
+  setInterval(scheduleNightUpdate, 60*60*1000);
+});
+</script>
+</body>
+</html>
